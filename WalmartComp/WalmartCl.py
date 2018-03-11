@@ -44,31 +44,31 @@ data.info()
 X = data.loc[:, data.columns != "TripType"]
 y = data.TripType
 
-
 # Taking care of missing data
 from sklearn.preprocessing import Imputer
 imputer = Imputer(missing_values = 'NaN', strategy = 'mean', axis = 0)
 imputer = imputer.fit(X[numerical_nan_cols])
 X[numerical_nan_cols] = imputer.transform(X[numerical_nan_cols])
 
-checkNulls(X)
+#From this point work with X and y
 
-print(numerical_nan_cols)
-categorical_index = []
-for col_name in categorical_cols:
-     categorical_index.append(X.columns.get_loc(col_name))
+def getIndexCategorical(categorical_cols):   
+    categorical_index = []
+    for col_name in categorical_cols:
+         categorical_index.append(X.columns.get_loc(col_name))
+    return categorical_index
 
-X.iloc[:,categorical_index].sample(2)
+categorical_index = getIndexCategorical(categorical_cols)
+#X.iloc[:,categorical_index].sample(2)
 
 # Encoding categorical data
 # Encoding the Independent Variable
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 labelencoder_X = LabelEncoder()
-
 for index in categorical_index:
     X.iloc[:, index] = labelencoder_X.fit_transform(X.iloc[:, index])
 
-onehotencoder = OneHotEncoder(categorical_features = [0])
+onehotencoder = OneHotEncoder(categorical_features = categorical_index)
 X = onehotencoder.fit_transform(X).toarray()
 # Encoding the Dependent Variable
 labelencoder_y = LabelEncoder()
