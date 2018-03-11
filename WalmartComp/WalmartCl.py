@@ -15,27 +15,34 @@ import pandas as pd
 
 # Importing the dataset
 data = pd.read_csv("train.csv")
-
-X = data.loc[:, data.columns != "TripType"]
-
-y = data.TripType
+data.info()
+data.head()
 
 def checkNulls(data):
     numerical_nan_cols = []
-    categorical_nan_cols = []
+    categorical_cols = []
+    
     for col in data:
         if data[col].isnull().values.any():
-            print("column: " + col + " has null values")
+            #print("column: " + col + " has null values")
             if data[col].dtype in ['int64', 'float64']:
                 numerical_nan_cols.append(col)
             elif data[col].dtype == "object":
-                categorical_nan_cols.append(col)
-    return numerical_nan_cols, categorical_nan_cols
+                data[col] = data[col].fillna('0')
                 
+        if data[col].dtype == "object":
+            categorical_cols.append(col)
+            
+    return numerical_nan_cols, categorical_cols
 
-numerical_nan_cols, categorical_nan_cols = checkNulls(data)
+numerical_nan_cols, categorical_cols = checkNulls(data)
+#data["DepartmentDescription"].isnull().values.any()
 
-print(numerical_nan_cols)
+data.info()
+#a, b = data["DepartmentDescription"].factorize()
+
+X = data.loc[:, data.columns != "TripType"]
+y = data.TripType
 
 
 # Taking care of missing data
@@ -46,11 +53,21 @@ X[numerical_nan_cols] = imputer.transform(X[numerical_nan_cols])
 
 checkNulls(X)
 
+print(numerical_nan_cols)
+categorical_index = []
+for col_name in categorical_cols:
+     categorical_index.append(X.columns.get_loc(col_name))
+
+X.iloc[:,categorical_index].sample(2)
+
 # Encoding categorical data
 # Encoding the Independent Variable
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 labelencoder_X = LabelEncoder()
-X[:, 0] = labelencoder_X.fit_transform(X[:, 0])
+
+for index in categorical_index:
+    X.iloc[:, index] = labelencoder_X.fit_transform(X.iloc[:, index])
+
 onehotencoder = OneHotEncoder(categorical_features = [0])
 X = onehotencoder.fit_transform(X).toarray()
 # Encoding the Dependent Variable
