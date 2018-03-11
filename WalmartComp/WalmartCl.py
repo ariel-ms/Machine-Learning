@@ -64,16 +64,14 @@ categorical_index = getIndexCategorical(categorical_cols)
 # Encoding categorical data
 # Encoding the Independent Variable
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
-labelencoder_X = LabelEncoder()
+
 for index in categorical_index:
-    X.iloc[:, index] = labelencoder_X.fit_transform(X.iloc[:, index])
+    labelencoder = LabelEncoder()
+    X.iloc[:, index] = labelencoder.fit_transform(X.iloc[:, index])
 
 onehotencoder = OneHotEncoder(categorical_features = categorical_index)
 X = onehotencoder.fit_transform(X).toarray()
-# Encoding the Dependent Variable
-labelencoder_y = LabelEncoder()
-y = labelencoder_y.fit_transform(y)
-
+print(type(X))
 
 # Splitting the dataset into the Training set and Test set
 from sklearn.cross_validation import train_test_split
@@ -81,15 +79,16 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25, rand
 
 
 # Feature Scaling
-#from sklearn.preprocessing import StandardScaler
-#sc = StandardScaler()
-#X_train = sc.fit_transform(X_train)
-#X_test = sc.transform(X_test)
-
-
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+X_train = sc.fit_transform(X_train)
+X_test = sc.transform(X_test)
 
 # Fitting classifier to the Training set
-# Create your classifier here
+from sklearn.ensemble import RandomForestClassifier
+classifier = RandomForestClassifier(n_estimators = 10, criterion = 'entropy', random_state = 0)
+classifier.fit(X_train, y_train)
+
 
 # Predicting the Test set results
 y_pred = classifier.predict(X_test)
