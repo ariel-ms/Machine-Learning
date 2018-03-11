@@ -5,18 +5,15 @@ Created on Fri Mar  9 22:13:26 2018
 @author: Ariel
 """
 
-# Classification template
-
 # Importing the libraries
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-
 # Importing the dataset
 data = pd.read_csv("train.csv")
-data.info()
-data.head()
+data = data.iloc[:10000,:]
+#data.head()
 
 def checkNulls(data):
     numerical_nan_cols = []
@@ -38,7 +35,7 @@ def checkNulls(data):
 numerical_nan_cols, categorical_cols = checkNulls(data)
 #data["DepartmentDescription"].isnull().values.any()
 
-data.info()
+#data.info()
 #a, b = data["DepartmentDescription"].factorize()
 
 X = data.loc[:, data.columns != "TripType"]
@@ -71,12 +68,11 @@ for index in categorical_index:
 
 onehotencoder = OneHotEncoder(categorical_features = categorical_index)
 X = onehotencoder.fit_transform(X).toarray()
-print(type(X))
+#print(type(X))
 
 # Splitting the dataset into the Training set and Test set
 from sklearn.cross_validation import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25, random_state = 0)
-
 
 # Feature Scaling
 from sklearn.preprocessing import StandardScaler
@@ -85,16 +81,47 @@ X_train = sc.fit_transform(X_train)
 X_test = sc.transform(X_test)
 
 # Fitting classifier to the Training set
+
+"""
+# Fitting Logistic Regression to the Training set
+from sklearn.linear_model import LogisticRegression
+classifier = LogisticRegression(random_state = 0)
+classifier.fit(X_train, y_train)
+"""
+
+"""
+from sklearn.neighbors import KNeighborsClassifier
+classifier = KNeighborsClassifier(n_neighbors = 5, metric = 'minkowski', p = 2)
+classifier.fit(X_train, y_train)
+"""
+
+
 from sklearn.ensemble import RandomForestClassifier
-classifier = RandomForestClassifier(n_estimators = 10, criterion = 'entropy', random_state = 42)
+classifier = RandomForestClassifier(n_estimators = 20, criterion = 'entropy', random_state = 42)
 classifier.fit(X_train, y_train)
 
-# Predicting the Test set results
-y_pred = classifier.predict(X_test)
 
+"""
+# Fitting Naive Bayes to the Training set
+from sklearn.naive_bayes import GaussianNB
+classifier = GaussianNB()
+classifier.fit(X_train, y_train)
+"""
+
+"""
+# Fitting Kernel SVM to the Training set
+from sklearn.svm import SVC
+classifier = SVC(kernel = 'rbf', random_state = 0)
+classifier.fit(X_train, y_train)
+# Predicting the Test set results
+"""
+
+y_pred = classifier.predict(X_test)
 # Making the Confusion Matrix
-from sklearn.metrics import confusion_matrix
-cm = confusion_matrix(y_test, y_pred)
+from sklearn.metrics import confusion_matrix, accuracy_score
+#cm = confusion_matrix(y_test, y_pred)
+accuracy_score(y_test, y_pred)
+
 
 """
 # Visualising the Training set results
