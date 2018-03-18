@@ -2,7 +2,7 @@
 """
 Created on Sat Mar 17 22:05:47 2018
 
-@author: Ariel
+@author: Ariel Mendez
 
 Practice of data preparation and backward elimination
 """
