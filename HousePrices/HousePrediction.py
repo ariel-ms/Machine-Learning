@@ -80,13 +80,15 @@ X_opt = train_df
 
 train_df, test_df = backwardElimination(X_opt, test_df, SL)
 
+"""
 from sklearn.cross_validation import train_test_split
 X_train, X_test, Y_train, Y_test = train_test_split(train_df, y, test_size = 0.2, random_state = 0)
+"""
 
 # Fitting Multiple Linear Regression to the Training set
 from sklearn.linear_model import LinearRegression
 regressor = LinearRegression()
-regressor.fit(X_train, Y_train)
+regressor.fit(train_df, y)
 # Predicting the Test set results
 y_pred = regressor.predict(test_df)
 
